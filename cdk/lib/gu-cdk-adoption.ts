@@ -28,7 +28,7 @@ export class GuCdkAdoption extends GuStack {
         bucket: bucketName.valueAsString,
         key: `${this.stack}/${this.stage}/${this.app}/${this.app}.zip`,
       },
-      environment: { APIToken: apiToken.valueAsString },
+      environment: { API_TOKEN: apiToken.valueAsString },
       functionName: `${this.app}-${this.stage}`,
       monitoringConfiguration: {
         toleratedErrorPercentage: 50,

@@ -8,8 +8,8 @@ interface GetContent {
   };
 }
 
-if (!process.env["APIToken"]) {
-  throw new Error("No APIToken envar for GitHub");
+if (!process.env["API_TOKEN"]) {
+  throw new Error("No API_TOKEN envar for GitHub");
 }
 
 const decoded = (data: string) => {
@@ -17,7 +17,7 @@ const decoded = (data: string) => {
 };
 
 (async () => {
-  const octokit = new Octokit({ auth: process.env["APIToken"] });
+  const octokit = new Octokit({ auth: process.env["API_TOKEN"] });
   const reposUsingGuCdk: RestEndpointMethodTypes["search"]["code"]["response"] = await octokit.search.code({
     q: `user:guardian filename:package.json "@guardian/cdk"`
   })
@@ -33,5 +33,4 @@ const decoded = (data: string) => {
   })
 
   console.log(`${usingCfn.data.total_count} using cloudformation`)
-
 })();

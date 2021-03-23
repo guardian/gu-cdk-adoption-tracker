@@ -1,0 +1,11 @@
+{
+  "projectName": "DevX::GuCDK Adoption Tracker",
+  "vcsURL": "https://github.com/guardian/gu-cdk-adoption-tracker",
+  "actions": [
+    {
+      "action": "gu-cdk-adoption-tracker",
+      "path": "./",
+      "compress": "zip"
+    }
+  ]
+}
