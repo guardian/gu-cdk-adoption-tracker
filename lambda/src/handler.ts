@@ -9,18 +9,21 @@ if (!process.env["API_TOKEN"]) {
 async function putMetric({ name, value }: { name: string; value: number }) {
   const cw = new CloudWatch({ region: "eu-west-1" });
   // @ts-ignore
-  cw.putMetricData({
-    MetricData: [
-      {
-        MetricName: "gu-cdk-adoption",
-        Dimensions: [{ Name: "Type", Value: name }],
-        Timestamp: new Date(),
-        Unit: "Count",
-        Value: value,
-      },
-    ],
-    Namespace: "GitHub",
-  }).promise();
+  const pmd = await cw
+    .putMetricData({
+      MetricData: [
+        {
+          MetricName: "gu-cdk-adoption",
+          Dimensions: [{ Name: "AdoptionLevel", Value: name }],
+          Timestamp: new Date(),
+          Unit: "Count",
+          Value: value,
+        },
+      ],
+      Namespace: "GitHub",
+    })
+    .promise();
+  console.log("putMetricData response", pmd);
 }
 
 export async function handler() {
