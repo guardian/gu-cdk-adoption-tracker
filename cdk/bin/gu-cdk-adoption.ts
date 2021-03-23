@@ -6,4 +6,7 @@ import { App } from "@aws-cdk/core";
 import { GuCdkAdoption } from "../lib/gu-cdk-adoption";
 
 const app = new App();
-new GuCdkAdoption(app, "GuCdkAdoption", { app: "gu-cdk-adoption",stack: "deploy" });
+new GuCdkAdoption(app, "GuCdkAdoption", {
+  app: "gu-cdk-adoption",
+  stack: "deploy",
+});

@@ -2,16 +2,43 @@
 
 import type { App } from "@aws-cdk/core";
 import type { GuStackProps } from "@guardian/cdk/lib/constructs/core";
-import { GuStack } from "@guardian/cdk/lib/constructs/core";
-import {GuScheduledLambda} from "@guardian/cdk";
+import {
+  GuDistributionBucketParameter,
+  GuStack,
+  GuStringParameter,
+} from "@guardian/cdk/lib/constructs/core";
+import { GuScheduledLambda } from "@guardian/cdk";
+import { Duration } from "@aws-cdk/core";
+import { Schedule } from "@aws-cdk/aws-events";
+import { Runtime } from "@aws-cdk/aws-lambda";
+import { GuVpc } from "@guardian/cdk/lib/constructs/ec2";
 
 export class GuCdkAdoption extends GuStack {
   constructor(scope: App, id: string, props: GuStackProps) {
     super(scope, id, props);
 
-    new GuScheduledLambda(this, "scheduled-lambda", {
-      code: {bucket: "deploy-tools-dist", key: ""}, monitoringConfiguration: undefined, schedule: undefined
+    const bucketName = new GuDistributionBucketParameter(this, "dist-bucket");
+    const apiToken = new GuStringParameter(this, "api-token", {
+      description: "GitHub API token with repo permissions",
+      fromSSM: true,
+    });
 
-    })
+    new GuScheduledLambda(this, "scheduled-lambda", {
+      code: {
+        bucket: bucketName.valueAsString,
+        key: `${this.stack}/${this.stage}/${this.app}/${this.app}.zip`,
+      },
+      environment: { APIToken: apiToken.valueAsString },
+      functionName: `${this.app}-${this.stage}`,
+      monitoringConfiguration: {
+        toleratedErrorPercentage: 50,
+        snsTopicName: "devx-alerts",
+      },
+      schedule: Schedule.rate(Duration.days(7)),
+      runtime: Runtime.NODEJS_14_X,
+      handler: "handler.handler",
+      vpc: GuVpc.fromIdParameter(this, "vpc"),
+      vpcSubnets: { subnets: GuVpc.subnetsfromParameter(this) },
+    });
   }
 }
