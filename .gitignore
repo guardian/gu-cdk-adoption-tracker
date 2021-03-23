@@ -1,2 +1,6 @@
 .idea
 node_modules
+
+lambda/lib
+gu-cdk-adoption-tracker
+gu-cdk-adoption-tracker.zip

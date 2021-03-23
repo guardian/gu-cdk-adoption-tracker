@@ -7,6 +7,6 @@ import { GuCdkAdoption } from "../lib/gu-cdk-adoption";
 
 const app = new App();
 new GuCdkAdoption(app, "GuCdkAdoption", {
-  app: "gu-cdk-adoption",
+  app: "gu-cdk-adoption-tracker",
   stack: "deploy",
 });
