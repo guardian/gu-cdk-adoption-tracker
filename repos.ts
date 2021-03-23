@@ -1,6 +1,8 @@
 import { Octokit } from "@octokit/rest";
 import { RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods/dist-types/generated/parameters-and-response-types";
 
+type GetAllRepos = RestEndpointMethodTypes["teams"]["listReposInOrg"]["response"]["data"]
+
 export async function getRepos(
   octokit: Octokit,
   page: number
@@ -16,7 +18,7 @@ export async function getRepos(
   return result.data;
 }
 
-export async function getAllRepos(octokit: Octokit) {
+export async function getAllRepos(octokit: Octokit): Promise<GetAllRepos> {
   const records: RestEndpointMethodTypes["teams"]["listReposInOrg"]["response"]["data"] = [];
   let keepGoing = true;
   let offset = 0;

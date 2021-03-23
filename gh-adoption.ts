@@ -1,5 +1,6 @@
 import { Octokit } from "@octokit/rest";
 import { getAllRepos } from "./repos";
+import {RestEndpointMethodTypes} from "@octokit/plugin-rest-endpoint-methods/dist-types/generated/parameters-and-response-types";
 
 interface GetContent {
   data: {
@@ -17,16 +18,20 @@ const decoded = (data: string) => {
 
 (async () => {
   const octokit = new Octokit({ auth: process.env["APIToken"] });
-  const repos = await getAllRepos(octokit);
-  console.log(repos.map((r) => r.name));
-  console.log(repos.length);
+  const reposUsingGuCdk: RestEndpointMethodTypes["search"]["code"]["response"] = await octokit.search.code({
+    q: `user:guardian filename:package.json "@guardian/cdk"`
+  })
+  console.log(`${reposUsingGuCdk.data.total_count} using GuCDK`)
 
-  // Compare: https://docs.github.com/en/rest/reference/repos/#list-organization-repositories
-  const res = (await octokit.repos.getContent({
-    owner: "guardian",
-    repo: "cdk",
-    path: "package.json",
-  })) as GetContent;
+  const usingAwsCdk = await octokit.search.code({
+    q: `user:guardian filename:package.json "@aws-cdk"`
+  })
+  console.log(`${usingAwsCdk.data.total_count} using @aws-cdk/core`)
 
-  console.log(decoded(res.data.content));
+  const usingCfn = await octokit.search.code({
+    q: `user:guardian filename:"cloudformation.yaml" filename:"cloudformation.yml" filename:"cfn.yaml" filename:"cfn.yml"`
+  })
+
+  console.log(`${usingCfn.data.total_count} using cloudformation`)
+
 })();
