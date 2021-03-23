@@ -13,7 +13,6 @@ import {
   GuStringParameter,
 } from "@guardian/cdk/lib/constructs/core";
 import { GuVpc } from "@guardian/cdk/lib/constructs/ec2";
-import { GuAllowPolicy, GuRole } from "@guardian/cdk/lib/constructs/iam";
 
 export class GuCdkAdoption extends GuStack {
   constructor(scope: App, id: string, props: GuStackProps) {

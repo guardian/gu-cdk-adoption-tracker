@@ -8,7 +8,6 @@ if (!process.env["API_TOKEN"]) {
 
 async function putMetric({ name, value }: { name: string; value: number }) {
   const cw = new CloudWatch({ region: "eu-west-1" });
-  // @ts-ignore
   const pmd = await cw
     .putMetricData({
       MetricData: [
@@ -43,7 +42,6 @@ export async function handler() {
     q: `user:guardian filename:package.json "@aws-cdk"`,
   });
   console.log(`${usingAwsCdk.data.total_count} using @aws-cdk/core`);
-
   await putMetric({
     name: "Repositories using @aws-cdk/core",
     value: usingAwsCdk.data.total_count,
@@ -53,7 +51,6 @@ export async function handler() {
     q: `user:guardian filename:"cloudformation.yaml" filename:"cloudformation.yml" filename:"cfn.yaml" filename:"cfn.yml"`,
   });
   console.log(`${usingCfn.data.total_count} using cloudformation`);
-
   await putMetric({
     name: "Repositories using Cloudformation",
     value: usingCfn.data.total_count,
