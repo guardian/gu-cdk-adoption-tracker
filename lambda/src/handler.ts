@@ -20,7 +20,7 @@ async function putMetric({ name, value }: { name: string; value: number }) {
           Value: value,
         },
       ],
-      Namespace: "GitHub",
+      Namespace: "gu-cdk-adoption",
     })
     .promise();
   console.log("putMetricData response", pmd);
