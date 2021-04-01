@@ -23,13 +23,19 @@ export class GuCdkAdoption extends GuStack {
       description: "GitHub API token with repo permissions",
       fromSSM: true,
     });
+    const prismUrl = new GuStringParameter(this, "prism-url", {
+      fromSSM: true,
+    });
 
     const lambda = new GuScheduledLambda(this, "scheduled-lambda", {
       code: {
         bucket: bucketName.valueAsString,
         key: `${this.stack}/${this.stage}/${this.app}/${this.app}.zip`,
       },
-      environment: { API_TOKEN: apiToken.valueAsString },
+      environment: {
+        API_TOKEN: apiToken.valueAsString,
+        PRISM_URL: prismUrl.valueAsString
+      },
       functionName: `${this.app}-${this.stage}`,
       monitoringConfiguration: {
         toleratedErrorPercentage: 50,
