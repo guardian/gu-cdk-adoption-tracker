@@ -7,14 +7,19 @@ if (!process.env["API_TOKEN"]) {
   throw new Error("No API_TOKEN envar for GitHub");
 }
 
-async function putMetric({ name, value }: { name: string; value: number }) {
+enum SourceSystem {
+  GITHUB = "GitHub",
+  PRISM = "Prism"
+}
+
+async function putMetric({ name, value, sourceSystem }: { name: string; value: number, sourceSystem: SourceSystem }) {
   const cw = new CloudWatch({ region: "eu-west-1" });
   const pmd = await cw
     .putMetricData({
       MetricData: [
         {
           MetricName: "gu-cdk-adoption",
-          Dimensions: [{ Name: "AdoptionLevel", Value: name }],
+          Dimensions: [{ Name: "AdoptionLevel", Value: name}, { Name: "SourceSystem", Value: sourceSystem }],
           Timestamp: new Date(),
           Unit: "Count",
           Value: value,
@@ -37,6 +42,7 @@ export async function handler() {
   await putMetric({
     name: "Repositories using @guardian/cdk",
     value: reposUsingGuCdk.data.total_count,
+    sourceSystem: SourceSystem.GITHUB,
   });
 
   const reposUsingAwsCdk = await octokit.search.code({
@@ -46,6 +52,7 @@ export async function handler() {
   await putMetric({
     name: "Repositories using @aws-cdk/core",
     value: reposUsingAwsCdk.data.total_count,
+    sourceSystem: SourceSystem.GITHUB,
   });
 
   const reposUsingCloudFormation = await octokit.search.code({
@@ -55,6 +62,7 @@ export async function handler() {
   await putMetric({
     name: "Repositories using Cloudformation",
     value: reposUsingCloudFormation.data.total_count,
+    sourceSystem: SourceSystem.GITHUB,
   });
 
   interface AppWithCoreTags {
@@ -75,12 +83,14 @@ export async function handler() {
   await putMetric({
     name: "Apps using @guardian/cdk",
     value: numberOfAppsAlreadyUsingGuCdk,
+    sourceSystem: SourceSystem.PRISM,
   });
 
   console.log(`Prism data shows that there are ${numberOfAppsLeftToMigrate} apps left to migrate.`)
   await putMetric({
     name: "Apps which need to migrate to @guardian/cdk",
     value: numberOfAppsLeftToMigrate,
+    sourceSystem: SourceSystem.PRISM,
   });
 
 }
